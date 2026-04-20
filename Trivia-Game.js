@@ -1,3 +1,4 @@
+//Trivia CLI
 // trivia-game.js
 // A CLI Trivia Game in JavaScript
 
