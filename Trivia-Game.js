@@ -88,16 +88,16 @@ function validateAnswer(userInput, correctAnswer) {
   const userAnswer = parseInt(userInput);
 
   if (userAnswer === correctAnswer) {
-    console.log("✅ Correct!\n");
+    console.log("Correct!\n");
     score++;
   } else {
-    console.log(`❌ Incorrect! The correct answer was ${correctAnswer}.\n`);
+    console.log(`Incorrect! The correct answer was ${correctAnswer}.\n`);
   }
 }
 
 // End game and display score
 function endGame() {
-  console.log("\n🎉 Game Over!");
+  console.log(" Game Over!");
   console.log(`Your final score: ${score} / ${questions.length}`);
 
   // Display a message based on performance
