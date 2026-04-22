@@ -1,113 +1,106 @@
-//Trivia CLI
-// trivia-game.js
-// A CLI Trivia Game in JavaScript
+// trivia.js
+const readline = require("readline");
 
-const readline = require('readline');
-
-// Setup CLI interface
+// Create interface
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
-// Quiz questions as an array of objects
+// Questions Array (Objects)
 const questions = [
   {
     question: "What is the capital of France?",
-    options: ["1. Berlin", "2. Madrid", "3. Paris", "4. Rome"],
-    answer: 3
+    options: ["A. Berlin", "B. Madrid", "C. Paris", "D. Rome"],
+    answer: "C"
   },
   {
-    question: "Which planet is known as the Red Planet?",
-    options: ["1. Venus", "2. Mars", "3. Jupiter", "4. Saturn"],
-    answer: 2
+    question: "Which language runs in a web browser?",
+    options: ["A. Java", "B. C", "C. Python", "D. JavaScript"],
+    answer: "D"
   },
   {
-    question: "Who wrote 'Romeo and Juliet'?",
-    options: ["1. Charles Dickens", "2. William Shakespeare", "3. Mark Twain", "4. J.K. Rowling"],
-    answer: 2
-  },
-  {
-    question: "What is 9 * 9?",
-    options: ["1. 81", "2. 72", "3. 99", "4. 91"],
-    answer: 1
+    question: "What does CLI stand for?",
+    options: [
+      "A. Command Line Interface",
+      "B. Computer Linked Interface",
+      "C. Code Level Input",
+      "D. Central Logic Interface"
+    ],
+    answer: "A"
   }
 ];
 
-// Global variables for score and timer
+// Global variables
 let score = 0;
-let questionIndex = 0;
-let timer;
-const timePerQuestion = 15; // seconds
+let currentQuestionIndex = 0;
+const TIME_LIMIT = 10000; // 10 seconds
 
-// Start the game
+// Start Game
 function startGame() {
-  console.log("Welcome to the CLI Trivia Game!");
-  console.log("You have " + timePerQuestion + " seconds to answer each question.");
-  console.log("Type the number corresponding to your answer.\n");
+  console.log(" Welcome to the Trivia CLI Game!");
+  console.log("You have 10 seconds per question.\n");
+
   askQuestion();
 }
 
-// Function to ask a question
+// Ask Question
 function askQuestion() {
-  if (questionIndex >= questions.length) {
+  if (currentQuestionIndex >= questions.length) {
     endGame();
     return;
   }
 
-  const currentQuestion = questions[questionIndex];
+  const currentQuestion = questions[currentQuestionIndex];
 
-  console.log(`Question ${questionIndex + 1}: ${currentQuestion.question}`);
-  currentQuestion.options.forEach(option => console.log(option));
+  console.log(`\nQuestion ${currentQuestionIndex + 1}:`);
+  console.log(currentQuestion.question);
 
-  let timeLeft = timePerQuestion;
+  // Array iteration (map)
+  currentQuestion.options.map(option => console.log(option));
 
-  // Start countdown timer for this question
-  timer = setInterval(() => {
-    timeLeft--;
-    process.stdout.write(`Time left: ${timeLeft}s\r`);
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      console.log("\nTime's up!");
-      questionIndex++;
-      askQuestion();
+  let timer;
+
+  // Timer for question
+  const timeout = setTimeout(() => {
+    console.log("Time's up!");
+    currentQuestionIndex++;
+    askQuestion();
+  }, TIME_LIMIT);
+
+  rl.question("\nYour answer: ", (userAnswer) => {
+    clearTimeout(timeout); // stop timer if answered
+
+    if (userAnswer.toUpperCase() === currentQuestion.answer) {
+      console.log("Correct!");
+      score++;
+    } else {
+      console.log(`Incorrect! Correct answer: ${currentQuestion.answer}`);
     }
-  }, 1000);
 
-  // Prompt user for input
-  rl.question("\nYour answer: ", (input) => {
-    clearInterval(timer);
-    validateAnswer(input, currentQuestion.answer);
-    questionIndex++;
+    currentQuestionIndex++;
     askQuestion();
   });
 }
 
-// Function to validate the answer
-function validateAnswer(userInput, correctAnswer) {
-  const userAnswer = parseInt(userInput);
-
-  if (userAnswer === correctAnswer) {
-    console.log("Correct!\n");
-    score++;
-  } else {
-    console.log(`Incorrect! The correct answer was ${correctAnswer}.\n`);
-  }
-}
-
-// End game and display score
+// End Game
 function endGame() {
-  console.log(" Game Over!");
-  console.log(`Your final score: ${score} / ${questions.length}`);
+  console.log("Game Over!");
+  console.log(`Your final score: ${score}/${questions.length}`);
 
-  // Display a message based on performance
-  const feedback = score === questions.length ? "Perfect score! You're a trivia master!" :
-                  score >= questions.length / 2 ? "Nice job! You did well." :
-                  "Better luck next time!";
-  console.log(feedback);
+  // Performance feedback
+  const percentage = (score / questions.length) * 100;
+
+  if (percentage === 100) {
+    console.log("Perfect score!");
+  } else if (percentage >= 60) {
+    console.log("Good job!");
+  } else {
+    console.log("Keep practicing!");
+  }
 
   rl.close();
 }
 
-// Start the game
+// Run the game
 startGame();
